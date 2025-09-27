@@ -2,49 +2,43 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>rouTU - Campus Route Planner</title>
-
-  <!-- MapLibre GL JS -->
-  <link href="https://unpkg.com/maplibre-gl@3.3.1/dist/maplibre-gl.css" rel="stylesheet" />
-  <link type="text/css" href="style.css" rel="stylesheet" />
-  <script src="https://unpkg.com/maplibre-gl@3.3.1/dist/maplibre-gl.js"></script>
-
-  <!-- Auth0 SPA SDK -->
-  <script src="https://cdn.auth0.com/js/auth0-spa-js/1.26/auth0-spa-js.production.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Add a Building</title>
+  <link href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css" rel="stylesheet" />
+  <link href="style.css" type="text/css" rel="stylesheet" />
 </head>
 <body>
-  <div id="header">
-    <h1>rouTU</h1>
-    <nav id="auth-nav">
-      <a href="#" id="auth-btn">Sign In / Sign Up</a>
-    </nav>
-    <button id="menu-toggle">☰</button>
-  </div>
-
-  <div id="map-container">
-    <div id="sidebar">
-      <div class="sidebar-section">
-        <h3>Today's Schedule</h3>
-        <select id="class-selector">
-          <option value="">Select a class</option>
-          <option value="0">CS101 - Engineering Hall</option>
-          <option value="1">MATH202 - Science Center</option>
-          <option value="2">HIST150 - Humanities Bldg</option>
-          <option value="3">BIO111 - Life Sciences</option>
-        </select>
-        <button id="route-btn">Show Route</button>
-      </div>
-      <div class="sidebar-section">
-        <h3>Add a Building</h3>
-        <input type="text" id="building-name" placeholder="Building name" />
-        <input type="number" id="building-lat" placeholder="Latitude" />
-        <input type="number" id="building-lng" placeholder="Longitude" />
+  <h1>Add a Building</h1>
+  <div class="container">
+    <div class="sidebar">
+      <!-- Collapsible Add Building -->
+      <div id="add-building-toggle">Add Building Manually &#x25BC;</div>
+      <div id="add-building-content">
+        <label for="building-name">Building Name</label>
+        <input id="building-name" type="text" placeholder="Building name" />
+        <label for="building-lat">Latitude</label>
+        <input id="building-lat" type="number" step="0.00001" placeholder="Latitude (e.g. 39.9811)" />
+        <label for="building-lng">Longitude</label>
+        <input id="building-lng" type="number" step="0.00001" placeholder="Longitude (e.g. -75.1550)" />
         <button id="add-building-btn">Add Building</button>
       </div>
+
+      <!-- Plan Route -->
+      <h2>Plan Route</h2>
+      <select id="class-selector" size="5" aria-label="Class list"></select>
+
+      <label for="route-input" style="margin-top:1rem;">Enter Schedule Text</label>
+      <textarea id="route-input" placeholder="Enter your class schedule here..."></textarea>
+      <button id="process-route-btn">Process Schedule &amp; Plan Route</button>
     </div>
-    <div id="map"></div>
+    <div class="map-container">
+      <div id="map"></div>
+    </div>
   </div>
+
+  <div id="error-popup">Only enter locations on main campus. Go Owls!</div>
+
+  <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
