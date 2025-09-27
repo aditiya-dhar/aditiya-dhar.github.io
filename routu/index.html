@@ -7,140 +7,24 @@
 
   <!-- MapLibre GL JS -->
   <link href="https://unpkg.com/maplibre-gl@3.3.1/dist/maplibre-gl.css" rel="stylesheet" />
+  <link type="text/css" href="style.css" rel="stylesheet" />
   <script src="https://unpkg.com/maplibre-gl@3.3.1/dist/maplibre-gl.js"></script>
+  <script src="script.js"></script>
 
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: sans-serif;
-    }
-
-    #header {
-      background-color: #1e3a8a;
-      color: white;
-      padding: 10px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    }
-
-    #header h1 {
-      margin: 0;
-      font-size: 20px;
-      display: flex;
-      align-items: center;
-    }
-
-    #menu-toggle {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 24px;
-      cursor: pointer;
-    }
-
-    #map-container {
-      display: flex;
-      flex-direction: column;
-      height: calc(100vh - 50px);
-    }
-
-    #sidebar {
-      background-color: #f8f8f8;
-      padding: 15px;
-      overflow-y: auto;
-      display: none;
-      max-height: 300px;
-      transition: max-height 0.3s ease, opacity 0.3s ease;
-    }
-
-    #sidebar.visible {
-      display: block;
-      max-height: 80vh;
-      opacity: 1;
-    }
-
-    #map {
-      flex-grow: 1;
-      width: 100%;
-      height: 100%;
-    }
-
-    .sidebar-section {
-      margin-bottom: 20px;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 15px;
-    }
-
-    .sidebar-section h3 {
-      margin-top: 0;
-      color: #333;
-      font-size: 1.1em;
-      margin-bottom: 10px;
-    }
-
-    .sidebar-section select,
-    .sidebar-section input[type="text"] {
-      width: 100%;
-      padding: 8px 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-sizing: border-box;
-      margin-bottom: 10px;
-      font-size: 1em;
-    }
-
-    #route-btn {
-      margin-top: 10px;
-      width: 100%;
-      padding: 8px;
-      font-size: 1em;
-      background-color: #9E1B34;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    #route-btn:hover {
-      background-color: #7c1428;
-    }
-
-    /* Desktop styles */
-    @media (min-width: 768px) {
-      #map-container {
-        flex-direction: row;
-      }
-
-      #sidebar {
-        display: block !important;
-        width: 300px;
-        max-height: none;
-        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        opacity: 1 !important;
-      }
-
-      #map {
-        height: 100%;
-      }
-
-      #menu-toggle {
-        display: none;
-      }
-    }
-  </style>
+  <!-- Auth0 SPA SDK -->
+  <script src="https://cdn.auth0.com/js/auth0-spa-js/1.26/auth0-spa-js.production.js"></script>
 </head>
 <body>
   <div id="header">
     <h1>rouTU</h1>
-    <button id="menu-toggle" aria-label="Toggle sidebar">☰</button>
+    <nav id="auth-nav">
+      <a href="#" id="auth-btn">Sign In / Sign Up</a>
+    </nav>
+    <button id="menu-toggle">☰</button>
   </div>
 
   <div id="map-container">
-    <div id="sidebar" class="visible">
+    <div id="sidebar">
       <div class="sidebar-section">
         <h3>Today's Schedule</h3>
         <select id="class-selector">
@@ -154,227 +38,13 @@
       </div>
       <div class="sidebar-section">
         <h3>Add a Building</h3>
-        <input type="text" id="building-name" placeholder="Building Name" />
-        <input type="text" id="building-lat" placeholder="Latitude (e.g. 39.9800)" />
-        <input type="text" id="building-lng" placeholder="Longitude (e.g. -75.1550)" />
-        <button id="add-building-btn" style="background-color:#9E1B34; color:white; border:none; border-radius:4px; padding:8px; width:100%; cursor:pointer;">Add Building</button>
+        <input type="text" id="building-name" placeholder="Building name" />
+        <input type="number" id="building-lat" placeholder="Latitude" />
+        <input type="number" id="building-lng" placeholder="Longitude" />
+        <button id="add-building-btn">Add Building</button>
       </div>
     </div>
     <div id="map"></div>
   </div>
-
-  <script>
-    const map = new maplibregl.Map({
-      container: 'map',
-      style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
-      center: [-75.1550, 39.9811],
-      zoom: 16,
-      pitch: 60,
-      bearing: -20,
-    });
-
-    map.addControl(new maplibregl.NavigationControl());
-
-    const classLocations = [
-      {
-        name: "CS101 - Engineering Hall",
-        description: "Computer Science 101, Engineering Building",
-        coords: [-75.1535, 39.9822],
-      },
-      {
-        name: "MATH202 - Science Center",
-        description: "Mathematics 202, Science Center",
-        coords: [-75.1570, 39.9805],
-      },
-      {
-        name: "HIST150 - Humanities Bldg",
-        description: "History 150, Humanities Building",
-        coords: [-75.1545, 39.9790],
-      },
-      {
-        name: "BIO111 - Life Sciences",
-        description: "Biology 111, Life Sciences Building",
-        coords: [-75.1510, 39.9808],
-      },
-    ];
-
-    // Store markers for easy removal if needed
-    const markers = [];
-
-    // Add initial markers
-    function addMarkers() {
-      classLocations.forEach(cls => {
-        const marker = new maplibregl.Marker({ color: '#9E1B34' })
-          .setLngLat(cls.coords)
-          .setPopup(new maplibregl.Popup().setHTML(`<strong>${cls.name}</strong><br>${cls.description}`))
-          .addTo(map);
-        markers.push(marker);
-      });
-    }
-
-    addMarkers();
-
-    let routeLayerId = null;
-
-    map.on('load', () => {
-      // Enable 3D buildings with dark red extrusion
-      if (map.getLayer('building')) {
-        map.setLayoutProperty('building', 'visibility', 'visible');
-        map.setPaintProperty('building', 'fill-extrusion-color', '#9E1B34');
-        map.setPaintProperty('building', 'fill-extrusion-height', ['get', 'height']);
-        map.setPaintProperty('building', 'fill-extrusion-base', ['get', 'min_height']);
-        map.setPaintProperty('building', 'fill-extrusion-opacity', 0.7);
-      }
-
-      // Override road colors to your dark red
-      const roadLayers = [
-        'road-primary',
-        'road-secondary',
-        'road-tertiary',
-        'road-street',
-        'road-service',
-        'road-link',
-        'road-major-link',
-      ];
-
-      roadLayers.forEach(layerId => {
-        if (map.getLayer(layerId)) {
-          map.setPaintProperty(layerId, 'line-color', '#9E1B34');
-          map.setPaintProperty(layerId, 'line-width', 2);
-        }
-      });
-
-      // Water stays dark gray
-      if (map.getLayer('water')) {
-        map.setPaintProperty('water', 'fill-color', '#3A3A3A');
-      }
-
-      // Parks get a darker green
-      if (map.getLayer('park')) {
-        map.setPaintProperty('park', 'fill-color', '#2E4A1F');
-      }
-
-      // Labels stay white for contrast
-      const labelLayers = [
-        'place-label',
-        'road-label',
-        'water-label',
-        'poi-label',
-        'building-label',
-      ];
-      labelLayers.forEach(labelLayer => {
-        if (map.getLayer(labelLayer)) {
-          map.setPaintProperty(labelLayer, 'text-color', '#FFF');
-        }
-      });
-    });
-
-    // Show route on button click with your dark red color line
-    document.getElementById('route-btn').addEventListener('click', () => {
-      const selector = document.getElementById('class-selector');
-      const index = selector.value;
-      if (index === "") return;
-
-      const cls = classLocations[index];
-      const start = [-75.1550, 39.9811];
-      const end = cls.coords;
-
-      if (routeLayerId) {
-        if (map.getLayer(routeLayerId)) map.removeLayer(routeLayerId);
-        if (map.getSource(routeLayerId)) map.removeSource(routeLayerId);
-      }
-
-      routeLayerId = `route-${Date.now()}`;
-
-      map.addSource(routeLayerId, {
-        type: 'geojson',
-        data: {
-          type: 'Feature',
-          geometry: {
-            type: 'LineString',
-            coordinates: [start, end],
-          },
-        },
-      });
-
-      map.addLayer({
-        id: routeLayerId,
-        type: 'line',
-        source: routeLayerId,
-        layout: {
-          'line-cap': 'round',
-          'line-join': 'round',
-        },
-        paint: {
-          'line-color': '#9E1B34',
-          'line-width': 5,
-        },
-      });
-    });
-
-    // Toggle sidebar for mobile
-    document.getElementById("menu-toggle").addEventListener("click", () => {
-      const sidebar = document.getElementById("sidebar");
-      if (sidebar.classList.contains("visible")) {
-        sidebar.classList.remove("visible");
-      } else {
-        sidebar.classList.add("visible");
-      }
-    });
-
-    // Add new building button functionality
-    document.getElementById('add-building-btn').addEventListener('click', () => {
-      const nameInput = document.getElementById('building-name');
-      const latInput = document.getElementById('building-lat');
-      const lngInput = document.getElementById('building-lng');
-      const name = nameInput.value.trim();
-      const lat = parseFloat(latInput.value);
-      const lng = parseFloat(lngInput.value);
-
-      if (!name) {
-        alert("Please enter a building name.");
-        return;
-      }
-      if (isNaN(lat) || lat < -90 || lat > 90) {
-        alert("Please enter a valid latitude (-90 to 90).");
-        return;
-      }
-      if (isNaN(lng) || lng < -180 || lng > 180) {
-        alert("Please enter a valid longitude (-180 to 180).");
-        return;
-      }
-
-      const newBuilding = {
-        name: name,
-        description: name,
-        coords: [lng, lat],
-      };
-
-      // Add new building to classLocations array
-      classLocations.push(newBuilding);
-
-      // Add new marker
-      const marker = new maplibregl.Marker({ color: '#9E1B34' })
-        .setLngLat(newBuilding.coords)
-        .setPopup(new maplibregl.Popup().setHTML(`<strong>${newBuilding.name}</strong>`))
-        .addTo(map);
-      markers.push(marker);
-
-      // Add option to select dropdown
-      const selector = document.getElementById('class-selector');
-      const option = document.createElement('option');
-      option.value = classLocations.length - 1; // new index
-      option.textContent = newBuilding.name;
-      selector.appendChild(option);
-
-      // Clear input fields
-      nameInput.value = "";
-      latInput.value = "";
-      lngInput.value = "";
-
-      // Optionally, select the new building automatically
-      selector.value = option.value;
-    });
-  </script>
 </body>
 </html>
