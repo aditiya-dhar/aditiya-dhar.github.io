@@ -5,11 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>rouTU - Campus Route Planner</title>
 
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-  <!-- Leaflet Routing Machine CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+  <!-- MapLibre GL JS -->
+  <link href="https://unpkg.com/maplibre-gl@3.3.1/dist/maplibre-gl.css" rel="stylesheet" />
+  <script src="https://unpkg.com/maplibre-gl@3.3.1/dist/maplibre-gl.js"></script>
 
   <style>
     body {
@@ -26,7 +24,6 @@
       align-items: center;
       justify-content: space-between;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-      z-index: 1000;
     }
 
     #header h1 {
@@ -36,14 +33,12 @@
       align-items: center;
     }
 
-    #header h1::before {
-      content: ' ';
-      display: inline-block;
-      width: 24px;
-      height: 24px;
-      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M12 2a9 9 0 00-9 9c0 5.25 9 11 9 11s9-5.75 9-11a9 9 0 00-9-9zm0 12.5a3.5 3.5 0 110-7 3.5 3.5 0 010 7z"/></svg>') no-repeat center center;
-      background-size: contain;
-      margin-right: 10px;
+    #menu-toggle {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
     }
 
     #map-container {
@@ -62,8 +57,8 @@
 
     #map {
       flex-grow: 1;
+      width: 100%;
       height: 100%;
-      z-index: 1;
     }
 
     .sidebar-section {
@@ -86,12 +81,10 @@
       border-radius: 4px;
     }
 
-    #menu-toggle {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 24px;
-      cursor: pointer;
+    #route-btn {
+      margin-top: 10px;
+      width: 100%;
+      padding: 8px;
     }
 
     /* Desktop styles */
@@ -134,97 +127,107 @@
           <option value="2">HIST150 - Humanities Bldg</option>
           <option value="3">BIO111 - Life Sciences</option>
         </select>
-        <button id="route-btn" style="margin-top: 10px; width: 100%; padding: 8px;">Show Route</button>
+        <button id="route-btn">Show Route</button>
       </div>
     </div>
     <div id="map"></div>
   </div>
 
-  <!-- Leaflet JS (no integrity check to avoid errors) -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-  <!-- Leaflet Routing Machine -->
-  <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js"></script>
-
-  <!-- App JS -->
   <script>
-    // Map centered on Temple University
-    const map = L.map("map").setView([39.9811, -75.1550], 16);
+    // Initialize map
+    const map = new maplibregl.Map({
+      container: 'map',
+      style: 'https://demotiles.maplibre.org/style.json', // OSM vector style
+      center: [-75.1550, 39.9811], // Temple University
+      zoom: 16,
+      pitch: 60, // Tilt for 3D
+      bearing: -20, // Rotate for better angle
+    });
 
-    // Add OpenStreetMap tiles
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
-    }).addTo(map);
+    // Add controls
+    map.addControl(new maplibregl.NavigationControl());
 
-    // Simulated class locations
+    // Simulated class data
     const classLocations = [
       {
         name: "CS101 - Engineering Hall",
         description: "Computer Science 101, Engineering Building",
-        lat: 39.9822,
-        lng: -75.1535,
+        coords: [-75.1535, 39.9822],
       },
       {
         name: "MATH202 - Science Center",
         description: "Mathematics 202, Science Center",
-        lat: 39.9805,
-        lng: -75.1570,
+        coords: [-75.1570, 39.9805],
       },
       {
         name: "HIST150 - Humanities Bldg",
         description: "History 150, Humanities Building",
-        lat: 39.9790,
-        lng: -75.1545,
+        coords: [-75.1545, 39.9790],
       },
       {
         name: "BIO111 - Life Sciences",
         description: "Biology 111, Life Sciences Building",
-        lat: 39.9808,
-        lng: -75.1510,
+        coords: [-75.1510, 39.9808],
       },
     ];
 
-    // Add markers for each class
-    const markers = classLocations.map(cls => {
-      return L.marker([cls.lat, cls.lng])
-        .addTo(map)
-        .bindPopup(`<b>${cls.name}</b><br>${cls.description}`);
+    // Add markers
+    map.on('load', () => {
+      classLocations.forEach((cls, index) => {
+        new maplibregl.Marker()
+          .setLngLat(cls.coords)
+          .setPopup(new maplibregl.Popup().setHTML(`<strong>${cls.name}</strong><br>${cls.description}`))
+          .addTo(map);
+      });
     });
 
-    let routingControl;
+    // Show route (simple line)
+    let routeLayerId = null;
 
-    document.getElementById("route-btn").addEventListener("click", () => {
-      const selectedIndex = document.getElementById("class-selector").value;
-      if (selectedIndex === "") return;
+    document.getElementById('route-btn').addEventListener('click', () => {
+      const selector = document.getElementById('class-selector');
+      const index = selector.value;
+      if (index === "") return;
 
-      const cls = classLocations[selectedIndex];
+      const cls = classLocations[index];
+      const start = [-75.1550, 39.9811]; // Simulated current location
+      const end = cls.coords;
 
-      // Simulated current location (Temple center)
-      const currentLocation = [39.9811, -75.1550];
-
-      // Remove previous route if exists
-      if (routingControl) {
-        map.removeControl(routingControl);
+      if (routeLayerId) {
+        map.removeLayer(routeLayerId);
+        map.removeSource(routeLayerId);
       }
 
-      // Draw new route
-      routingControl = L.Routing.control({
-        waypoints: [
-          L.latLng(currentLocation[0], currentLocation[1]),
-          L.latLng(cls.lat, cls.lng)
-        ],
-        lineOptions: {
-          styles: [{ color: 'blue', weight: 5 }]
+      routeLayerId = `route-${Date.now()}`;
+
+      // Fake route line (straight line between points)
+      map.addSource(routeLayerId, {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: [start, end],
+          },
         },
-        show: false,
-        addWaypoints: false,
-        draggableWaypoints: false,
-        routeWhileDragging: false
-      }).addTo(map);
+      });
+
+      map.addLayer({
+        id: routeLayerId,
+        type: 'line',
+        source: routeLayerId,
+        layout: {
+          'line-cap': 'round',
+          'line-join': 'round',
+        },
+        paint: {
+          'line-color': '#007AFF',
+          'line-width': 4,
+        },
+      });
     });
 
-    // Toggle sidebar for mobile
+    // Toggle sidebar on mobile
     document.getElementById("menu-toggle").addEventListener("click", () => {
       const sidebar = document.getElementById("sidebar");
       sidebar.style.display = sidebar.style.display === "block" ? "none" : "block";
