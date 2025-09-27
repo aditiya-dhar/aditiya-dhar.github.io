@@ -134,11 +134,10 @@
   </div>
 
   <script>
-  // Initialize map with detailed basemap style (CARTO Positron)
   const map = new maplibregl.Map({
     container: 'map',
-    style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json', // Detailed basemap
-    center: [-75.1550, 39.9811], // Temple University
+    style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+    center: [-75.1550, 39.9811],
     zoom: 16,
     pitch: 60,
     bearing: -20,
@@ -146,7 +145,6 @@
 
   map.addControl(new maplibregl.NavigationControl());
 
-  // Class locations
   const classLocations = [
     {
       name: "CS101 - Engineering Hall",
@@ -173,32 +171,74 @@
   let routeLayerId = null;
 
   map.on('load', () => {
-    // Add markers for classes
+    // Add markers for classes with your dark red color
     classLocations.forEach(cls => {
-      new maplibregl.Marker()
+      new maplibregl.Marker({ color: '#9E1B34' })
         .setLngLat(cls.coords)
         .setPopup(new maplibregl.Popup().setHTML(`<strong>${cls.name}</strong><br>${cls.description}`))
         .addTo(map);
     });
 
-    // Enable 3D buildings if layer exists
+    // Enable 3D buildings with dark red extrusion
     if (map.getLayer('building')) {
       map.setLayoutProperty('building', 'visibility', 'visible');
-      map.setPaintProperty('building', 'fill-extrusion-color', '#aaa');
+      map.setPaintProperty('building', 'fill-extrusion-color', '#9E1B34');
       map.setPaintProperty('building', 'fill-extrusion-height', ['get', 'height']);
       map.setPaintProperty('building', 'fill-extrusion-base', ['get', 'min_height']);
-      map.setPaintProperty('building', 'fill-extrusion-opacity', 0.6);
+      map.setPaintProperty('building', 'fill-extrusion-opacity', 0.7);
     }
+
+    // Override road colors to your dark red
+    const roadLayers = [
+      'road-primary',
+      'road-secondary',
+      'road-tertiary',
+      'road-street',
+      'road-service',
+      'road-link',
+      'road-major-link',
+    ];
+
+    roadLayers.forEach(layerId => {
+      if (map.getLayer(layerId)) {
+        map.setPaintProperty(layerId, 'line-color', '#9E1B34');
+        map.setPaintProperty(layerId, 'line-width', 2);
+      }
+    });
+
+    // Water stays dark gray
+    if (map.getLayer('water')) {
+      map.setPaintProperty('water', 'fill-color', '#3A3A3A');
+    }
+
+    // Parks get a darker green
+    if (map.getLayer('park')) {
+      map.setPaintProperty('park', 'fill-color', '#2E4A1F');
+    }
+
+    // Labels stay white for contrast
+    const labelLayers = [
+      'place-label',
+      'road-label',
+      'water-label',
+      'poi-label',
+      'building-label',
+    ];
+    labelLayers.forEach(labelLayer => {
+      if (map.getLayer(labelLayer)) {
+        map.setPaintProperty(labelLayer, 'text-color', '#FFF');
+      }
+    });
   });
 
-  // Show route on button click
+  // Show route on button click with your dark red color line
   document.getElementById('route-btn').addEventListener('click', () => {
     const selector = document.getElementById('class-selector');
     const index = selector.value;
     if (index === "") return;
 
     const cls = classLocations[index];
-    const start = [-75.1550, 39.9811]; // Simulated start point (campus center)
+    const start = [-75.1550, 39.9811];
     const end = cls.coords;
 
     if (routeLayerId) {
@@ -208,7 +248,6 @@
 
     routeLayerId = `route-${Date.now()}`;
 
-    // Draw simple straight line route (replace with real routing API later)
     map.addSource(routeLayerId, {
       type: 'geojson',
       data: {
@@ -229,8 +268,8 @@
         'line-join': 'round',
       },
       paint: {
-        'line-color': '#007AFF',
-        'line-width': 4,
+        'line-color': '#9E1B34',
+        'line-width': 5,
       },
     });
   });
