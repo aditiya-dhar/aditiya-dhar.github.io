@@ -134,104 +134,112 @@
   </div>
 
   <script>
-    // Initialize map
-    const map = new maplibregl.Map({
-      container: 'map',
-      style: 'https://demotiles.maplibre.org/style.json', // OSM vector style
-      center: [-75.1550, 39.9811], // Temple University
-      zoom: 16,
-      pitch: 60, // Tilt for 3D
-      bearing: -20, // Rotate for better angle
+  // Initialize map with detailed basemap style (CARTO Positron)
+  const map = new maplibregl.Map({
+    container: 'map',
+    style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json', // Detailed basemap
+    center: [-75.1550, 39.9811], // Temple University
+    zoom: 16,
+    pitch: 60,
+    bearing: -20,
+  });
+
+  map.addControl(new maplibregl.NavigationControl());
+
+  // Class locations
+  const classLocations = [
+    {
+      name: "CS101 - Engineering Hall",
+      description: "Computer Science 101, Engineering Building",
+      coords: [-75.1535, 39.9822],
+    },
+    {
+      name: "MATH202 - Science Center",
+      description: "Mathematics 202, Science Center",
+      coords: [-75.1570, 39.9805],
+    },
+    {
+      name: "HIST150 - Humanities Bldg",
+      description: "History 150, Humanities Building",
+      coords: [-75.1545, 39.9790],
+    },
+    {
+      name: "BIO111 - Life Sciences",
+      description: "Biology 111, Life Sciences Building",
+      coords: [-75.1510, 39.9808],
+    },
+  ];
+
+  let routeLayerId = null;
+
+  map.on('load', () => {
+    // Add markers for classes
+    classLocations.forEach(cls => {
+      new maplibregl.Marker()
+        .setLngLat(cls.coords)
+        .setPopup(new maplibregl.Popup().setHTML(`<strong>${cls.name}</strong><br>${cls.description}`))
+        .addTo(map);
     });
 
-    // Add controls
-    map.addControl(new maplibregl.NavigationControl());
+    // Enable 3D buildings if layer exists
+    if (map.getLayer('building')) {
+      map.setLayoutProperty('building', 'visibility', 'visible');
+      map.setPaintProperty('building', 'fill-extrusion-color', '#aaa');
+      map.setPaintProperty('building', 'fill-extrusion-height', ['get', 'height']);
+      map.setPaintProperty('building', 'fill-extrusion-base', ['get', 'min_height']);
+      map.setPaintProperty('building', 'fill-extrusion-opacity', 0.6);
+    }
+  });
 
-    // Simulated class data
-    const classLocations = [
-      {
-        name: "CS101 - Engineering Hall",
-        description: "Computer Science 101, Engineering Building",
-        coords: [-75.1535, 39.9822],
-      },
-      {
-        name: "MATH202 - Science Center",
-        description: "Mathematics 202, Science Center",
-        coords: [-75.1570, 39.9805],
-      },
-      {
-        name: "HIST150 - Humanities Bldg",
-        description: "History 150, Humanities Building",
-        coords: [-75.1545, 39.9790],
-      },
-      {
-        name: "BIO111 - Life Sciences",
-        description: "Biology 111, Life Sciences Building",
-        coords: [-75.1510, 39.9808],
-      },
-    ];
+  // Show route on button click
+  document.getElementById('route-btn').addEventListener('click', () => {
+    const selector = document.getElementById('class-selector');
+    const index = selector.value;
+    if (index === "") return;
 
-    // Add markers
-    map.on('load', () => {
-      classLocations.forEach((cls, index) => {
-        new maplibregl.Marker()
-          .setLngLat(cls.coords)
-          .setPopup(new maplibregl.Popup().setHTML(`<strong>${cls.name}</strong><br>${cls.description}`))
-          .addTo(map);
-      });
-    });
+    const cls = classLocations[index];
+    const start = [-75.1550, 39.9811]; // Simulated start point (campus center)
+    const end = cls.coords;
 
-    // Show route (simple line)
-    let routeLayerId = null;
+    if (routeLayerId) {
+      if (map.getLayer(routeLayerId)) map.removeLayer(routeLayerId);
+      if (map.getSource(routeLayerId)) map.removeSource(routeLayerId);
+    }
 
-    document.getElementById('route-btn').addEventListener('click', () => {
-      const selector = document.getElementById('class-selector');
-      const index = selector.value;
-      if (index === "") return;
+    routeLayerId = `route-${Date.now()}`;
 
-      const cls = classLocations[index];
-      const start = [-75.1550, 39.9811]; // Simulated current location
-      const end = cls.coords;
-
-      if (routeLayerId) {
-        map.removeLayer(routeLayerId);
-        map.removeSource(routeLayerId);
-      }
-
-      routeLayerId = `route-${Date.now()}`;
-
-      // Fake route line (straight line between points)
-      map.addSource(routeLayerId, {
-        type: 'geojson',
-        data: {
-          type: 'Feature',
-          geometry: {
-            type: 'LineString',
-            coordinates: [start, end],
-          },
+    // Draw simple straight line route (replace with real routing API later)
+    map.addSource(routeLayerId, {
+      type: 'geojson',
+      data: {
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: [start, end],
         },
-      });
-
-      map.addLayer({
-        id: routeLayerId,
-        type: 'line',
-        source: routeLayerId,
-        layout: {
-          'line-cap': 'round',
-          'line-join': 'round',
-        },
-        paint: {
-          'line-color': '#007AFF',
-          'line-width': 4,
-        },
-      });
+      },
     });
 
-    // Toggle sidebar on mobile
-    document.getElementById("menu-toggle").addEventListener("click", () => {
-      const sidebar = document.getElementById("sidebar");
-      sidebar.style.display = sidebar.style.display === "block" ? "none" : "block";
+    map.addLayer({
+      id: routeLayerId,
+      type: 'line',
+      source: routeLayerId,
+      layout: {
+        'line-cap': 'round',
+        'line-join': 'round',
+      },
+      paint: {
+        'line-color': '#007AFF',
+        'line-width': 4,
+      },
     });
-  </script>
+  });
+
+  // Toggle sidebar for mobile
+  document.getElementById("menu-toggle").addEventListener("click", () => {
+    const sidebar = document.getElementById("sidebar");
+    sidebar.style.display = sidebar.style.display === "block" ? "none" : "block";
+  });
+</script>
 </body>
 </html>
