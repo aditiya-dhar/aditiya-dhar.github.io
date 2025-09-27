@@ -1,131 +1,141 @@
+/* Base styles */
+* {
+  box-sizing: border-box;
+}
+
 body {
-      margin: 0;
-      padding: 0;
-      font-family: sans-serif;
-    }
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
 
 #header {
-      background-color: #1e3a8a;
-      color: white;
-      padding: 10px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-      flex-wrap: wrap;
-      gap: 8px;
-    }
+  background-color: #1e3a8a;
+  color: white;
+  padding: 0.65rem 1.25rem; /* rounded 10px 20px */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  box-shadow: 0 0.15rem 0.3rem rgba(0, 0, 0, 0.2); /* 2px 5px */
+}
 
 #header h1 {
-      margin: 0;
-      font-size: 20px;
-    }
+  margin: 0;
+  font-size: 1.25rem;
+}
 
 #auth-nav {
-      margin-left: auto;
-    }
+  margin-left: auto;
+}
 
 #auth-nav a {
-      color: white;
-      text-decoration: none;
-      font-weight: 600;
-      padding: 6px 12px;
-      border: 2px solid white;
-      border-radius: 4px;
-      transition: background-color 0.3s ease, color 0.3s ease;
-      font-size: 0.9rem;
-      cursor: pointer;
-    }
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.4rem 0.75rem;
+  border: 0.15rem solid white;
+  border-radius: 0.25rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: inline-block;
+}
 
 #auth-nav a:hover {
-      background-color: white;
-      color: #1e3a8a;
-    }
+  background-color: white;
+  color: #1e3a8a;
+}
 
 #menu-toggle {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 24px;
-      cursor: pointer;
-    }
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
 
 #map-container {
-      display: flex;
-      flex-direction: column;
-      height: calc(100vh - 50px);
-    }
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 3.15rem); /* 50px -> 3.125rem → rounded to 3.15rem */
+}
 
 #sidebar {
-      background-color: #f8f8f8;
-      padding: 15px;
-      overflow-y: auto;
-      display: none;
-      max-height: 300px;
-    }
+  background-color: #f8f8f8;
+  padding: 0.95rem;
+  overflow-y: auto;
+  display: none;
+  width: 100%;
+  max-height: 18.75rem;
+}
+
+#sidebar.visible {
+  display: block !important;
+}
 
 #map {
-      flex-grow: 1;
-      width: 100%;
-      height: 100%;
-    }
+  flex-grow: 1;
+  width: 100%;
+  height: 100%;
+}
 
 .sidebar-section {
-      margin-bottom: 20px;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 15px;
-    }
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.95rem;
+}
 
 .sidebar-section h3 {
-      margin-top: 0;
-      color: #333;
-      font-size: 1.1em;
-      margin-bottom: 10px;
-    }
+  margin-top: 0;
+  color: #333;
+  font-size: 1.1rem;
+  margin-bottom: 0.65rem;
+}
 
 .sidebar-section select,
 .sidebar-section input {
-      width: 100%;
-      padding: 8px 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      margin-top: 5px;
-      margin-bottom: 10px;
-    }
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+  margin-top: 0.3rem;
+  margin-bottom: 0.65rem;
+  font-size: 0.9rem;
+}
 
 #route-btn,
 #add-building-btn {
-      width: 100%;
-      padding: 8px;
-      background-color: #9E1B34;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
+  width: 100%;
+  padding: 0.65rem;
+  background-color: #9E1B34;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
 
 #route-btn:hover,
 #add-building-btn:hover {
-      background-color: #7c1429;
-    }
+  background-color: #7c1429;
+}
 
-@media (min-width: 768px) {
-#map-container {
-        flex-direction: row;
-      }
+/* Responsive styles */
+@media (min-width: 48rem) {
+  #map-container {
+    flex-direction: row;
+  }
 
-    #sidebar {
-        display: block;
-        width: 300px;
-        max-height: none;
-        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-      }
+  #sidebar {
+    display: block;
+    width: 18.75rem;
+    max-height: none;
+    box-shadow: 0.15rem 0 0.3rem rgba(0, 0, 0, 0.1);
+  }
 
-    #menu-toggle {
-        display: none;
-      }
-    }
-
-    #sidebar.visible {
-      display: block !important;
-    }
+  #menu-toggle {
+    display: none;
+  }
+}
