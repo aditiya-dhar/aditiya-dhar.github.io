@@ -6,19 +6,11 @@
   <title>rouTU - Campus Route Planner</title>
 
   <!-- Leaflet CSS -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""
-  />
-  <!-- Leaflet Routing Machine CSS -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css"
-  />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-  <!-- Custom CSS -->
+  <!-- Leaflet Routing Machine CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+
   <style>
     body {
       margin: 0;
@@ -87,8 +79,7 @@
       margin-bottom: 10px;
     }
 
-    .sidebar-section select,
-    .sidebar-section input[type='text'] {
+    .sidebar-section select {
       width: 100%;
       padding: 8px 10px;
       border: 1px solid #ccc;
@@ -149,27 +140,24 @@
     <div id="map"></div>
   </div>
 
-  <!-- Leaflet JS -->
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20n6fxyVFoV7+bjAu4WNh1i6vsW/hMDngnADstjHhXg="
-    crossorigin=""
-  ></script>
+  <!-- Leaflet JS (no integrity check to avoid errors) -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <!-- Leaflet Routing Machine -->
   <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js"></script>
 
-  <!-- App Script -->
+  <!-- App JS -->
   <script>
-    // Center at Temple University
+    // Map centered on Temple University
     const map = L.map("map").setView([39.9811, -75.1550], 16);
 
+    // Add OpenStreetMap tiles
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19,
-      attribution:
-        '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
     }).addTo(map);
 
+    // Simulated class locations
     const classLocations = [
       {
         name: "CS101 - Engineering Hall",
@@ -197,10 +185,11 @@
       },
     ];
 
+    // Add markers for each class
     const markers = classLocations.map(cls => {
       return L.marker([cls.lat, cls.lng])
         .addTo(map)
-        .bindPopup(`<b>${cls.name}</b><br><p>${cls.description}</p>`);
+        .bindPopup(`<b>${cls.name}</b><br>${cls.description}`);
     });
 
     let routingControl;
@@ -211,13 +200,15 @@
 
       const cls = classLocations[selectedIndex];
 
-      const currentLocation = [39.9811, -75.1550]; // Simulated "current location" at Temple U
+      // Simulated current location (Temple center)
+      const currentLocation = [39.9811, -75.1550];
 
       // Remove previous route if exists
       if (routingControl) {
         map.removeControl(routingControl);
       }
 
+      // Draw new route
       routingControl = L.Routing.control({
         waypoints: [
           L.latLng(currentLocation[0], currentLocation[1]),
@@ -233,11 +224,9 @@
       }).addTo(map);
     });
 
-    // Mobile sidebar toggle
-    const menuToggle = document.getElementById("menu-toggle");
-    const sidebar = document.getElementById("sidebar");
-
-    menuToggle.addEventListener("click", () => {
+    // Toggle sidebar for mobile
+    document.getElementById("menu-toggle").addEventListener("click", () => {
+      const sidebar = document.getElementById("sidebar");
       sidebar.style.display = sidebar.style.display === "block" ? "none" : "block";
     });
   </script>
