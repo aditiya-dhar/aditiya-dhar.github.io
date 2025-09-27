@@ -1,189 +1,245 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>City Parks Explorer</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>rouTU - Campus Route Planner</title>
 
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-     crossorigin=""/>
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <!-- Leaflet Routing Machine CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css"
+  />
 
-    <!-- Custom CSS -->
-    <style>
-        body { margin: 0; padding: 0; font-family: sans-serif; }
-        #header {
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            z-index: 1000; /* Ensure header is above map controls */
-        }
-        #header h1 {
-            margin: 0;
-            font-size: 24px;
-            display: flex;
-            align-items: center;
-        }
-        #header h1::before {
-            content: ' ';
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>') no-repeat center center;
-            background-size: contain;
-            margin-right: 10px;
-        }
+  <!-- Custom CSS -->
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+    }
 
-        #map-container {
-            display: flex;
-            height: calc(100vh - 50px); /* Adjust height based on header height */
-        }
-        #sidebar {
-            width: 300px;
-            background-color: #f8f8f8;
-            padding: 15px;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-            overflow-y: auto;
-            flex-shrink: 0; /* Prevent sidebar from shrinking */
-        }
-        #map {
-            flex-grow: 1; /* Map takes remaining space */
-            height: 100%; /* Ensure map fills its container */
-            z-index: 1; /* Ensure map is below header */
-        }
-        .sidebar-section {
-            margin-bottom: 20px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 15px;
-        }
-        .sidebar-section:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-        .sidebar-section h3 {
-            margin-top: 0;
-            color: #555;
-            font-size: 1.1em;
-            margin-bottom: 10px;
-        }
-        .sidebar-section input[type="text"] {
-            width: calc(100% - 22px); /* Account for padding */
-            padding: 8px 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        .legend-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        .legend-item input[type="checkbox"] {
-            margin-right: 8px;
-        }
-        .leaflet-popup-content p {
-            margin: 0;
-            line-height: 1.4;
-        }
-        .leaflet-control-container {
-            margin-top: 50px; /* Adjust map controls position to avoid overlapping header */
-        }
-    </style>
+    #header {
+      background-color: #1e3a8a;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+    }
+
+    #header h1 {
+      margin: 0;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    #header h1::before {
+      content: ' ';
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M12 2a9 9 0 00-9 9c0 5.25 9 11 9 11s9-5.75 9-11a9 9 0 00-9-9zm0 12.5a3.5 3.5 0 110-7 3.5 3.5 0 010 7z"/></svg>') no-repeat center center;
+      background-size: contain;
+      margin-right: 10px;
+    }
+
+    #map-container {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 50px);
+    }
+
+    #sidebar {
+      background-color: #f8f8f8;
+      padding: 15px;
+      overflow-y: auto;
+      display: none;
+      max-height: 300px;
+    }
+
+    #map {
+      flex-grow: 1;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .sidebar-section {
+      margin-bottom: 20px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 15px;
+    }
+
+    .sidebar-section h3 {
+      margin-top: 0;
+      color: #333;
+      font-size: 1.1em;
+      margin-bottom: 10px;
+    }
+
+    .sidebar-section select,
+    .sidebar-section input[type='text'] {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    #menu-toggle {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    /* Desktop styles */
+    @media (min-width: 768px) {
+      #map-container {
+        flex-direction: row;
+      }
+
+      #sidebar {
+        display: block;
+        width: 300px;
+        max-height: none;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      }
+
+      #map {
+        height: 100%;
+      }
+
+      #menu-toggle {
+        display: none;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div id="header">
+    <h1>rouTU</h1>
+    <button id="menu-toggle">☰</button>
+  </div>
 
-    <div id="header">
-        <h1>CITY PARKS EXPLORER</h1>
-        <!-- You can add more icons/buttons here if needed -->
-        <div>
-            <!-- Example controls, not fully functional -->
-            <button style="background: none; border: none; color: white; font-size: 24px; cursor: pointer;">+</button>
-            <button style="background: none; border: none; color: white; font-size: 24px; cursor: pointer;">=</button>
-            <button style="background: none; border: none; color: white; font-size: 24px; cursor: pointer;">☰</button>
-        </div>
+  <div id="map-container">
+    <div id="sidebar">
+      <div class="sidebar-section">
+        <h3>Today's Schedule</h3>
+        <select id="class-selector">
+          <option value="">Select a class</option>
+          <option value="0">CS101 - Engineering Hall</option>
+          <option value="1">MATH202 - Science Center</option>
+          <option value="2">HIST150 - Humanities Bldg</option>
+          <option value="3">BIO111 - Life Sciences</option>
+        </select>
+        <button id="route-btn" style="margin-top: 10px; width: 100%; padding: 8px;">Show Route</button>
+      </div>
     </div>
+    <div id="map"></div>
+  </div>
 
-    <div id="map-container">
-        <div id="sidebar">
-            <div class="sidebar-section">
-                <h3>Search</h3>
-                <input type="text" placeholder="Search...">
-            </div>
-            <div class="sidebar-section">
-                <h3>Legend</h3>
-                <div class="legend-item">
-                    <input type="checkbox" id="all-parks" checked>
-                    <label for="all-parks">All Parks</label>
-                </div>
-                <div class="legend-item">
-                    <input type="checkbox" id="playgrounds">
-                    <label for="playgrounds">Playgrounds</label>
-                </div>
-                <div class="legend-item">
-                    <input type="checkbox" id="dog-friendly">
-                    <label for="dog-friendly">Dog-Friendly Areas</label>
-                </div>
-            </div>
-            <!-- More sidebar content can go here -->
-        </div>
-        <div id="map"></div>
-    </div>
+  <!-- Leaflet JS -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20n6fxyVFoV7+bjAu4WNh1i6vsW/hMDngnADstjHhXg="
+    crossorigin=""
+  ></script>
 
-    <!-- Leaflet JavaScript -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-     integrity="sha256-20n6fxyVFoV7+bjAu4WNh1i6vsW/hMDngnADstjHhXg="
-     crossorigin=""></script>
+  <!-- Leaflet Routing Machine -->
+  <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js"></script>
 
-    <!-- Custom JavaScript -->
-    <script>
-        // Initialize the map
-        // Coordinates for a generic city center (e.g., somewhere in the US)
-        var map = L.map('map').setView([34.0522, -118.2437], 13); // Centered on Los Angeles for demonstration
+  <!-- App Script -->
+  <script>
+    // Center at Temple University
+    const map = L.map("map").setView([39.9811, -75.1550], 16);
 
-        // Add OpenStreetMap tiles
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }).addTo(map);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution:
+        '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(map);
 
-        // Define some park data
-        var parks = [
-            {
-                name: "Central Park",
-                description: "A large urban park with walking trails and lake.",
-                lat: 34.058, lng: -118.25
-            },
-            {
-                name: "Community Gardens",
-                description: "Local spot for gardening and relaxation.",
-                lat: 34.062, lng: -118.23
-            },
-            {
-                name: "Riverside Green",
-                description: "Grassy area by the river, popular for picnics.",
-                lat: 34.045, lng: -118.26
-            },
-            {
-                name: "Hilltop Viewpoint",
-                description: "Park with scenic views of the city skyline.",
-                lat: 34.050, lng: -118.225
-            }
-        ];
+    const classLocations = [
+      {
+        name: "CS101 - Engineering Hall",
+        description: "Computer Science 101, Engineering Building",
+        lat: 39.9822,
+        lng: -75.1535,
+      },
+      {
+        name: "MATH202 - Science Center",
+        description: "Mathematics 202, Science Center",
+        lat: 39.9805,
+        lng: -75.1570,
+      },
+      {
+        name: "HIST150 - Humanities Bldg",
+        description: "History 150, Humanities Building",
+        lat: 39.9790,
+        lng: -75.1545,
+      },
+      {
+        name: "BIO111 - Life Sciences",
+        description: "Biology 111, Life Sciences Building",
+        lat: 39.9808,
+        lng: -75.1510,
+      },
+    ];
 
-        // Add markers for each park
-        parks.forEach(function(park) {
-            L.marker([park.lat, park.lng])
-                .addTo(map)
-                .bindPopup("<b>" + park.name + "</b><br><p>" + park.description + "</p>");
-        });
+    const markers = classLocations.map(cls => {
+      return L.marker([cls.lat, cls.lng])
+        .addTo(map)
+        .bindPopup(`<b>${cls.name}</b><br><p>${cls.description}</p>`);
+    });
 
-        // Optional: Fit map bounds to show all markers (after adding them)
-        // var group = new L.featureGroup(parks.map(p => L.marker([p.lat, p.lng])));
-        // map.fitBounds(group.getBounds());
-    </script>
+    let routingControl;
+
+    document.getElementById("route-btn").addEventListener("click", () => {
+      const selectedIndex = document.getElementById("class-selector").value;
+      if (selectedIndex === "") return;
+
+      const cls = classLocations[selectedIndex];
+
+      const currentLocation = [39.9811, -75.1550]; // Simulated "current location" at Temple U
+
+      // Remove previous route if exists
+      if (routingControl) {
+        map.removeControl(routingControl);
+      }
+
+      routingControl = L.Routing.control({
+        waypoints: [
+          L.latLng(currentLocation[0], currentLocation[1]),
+          L.latLng(cls.lat, cls.lng)
+        ],
+        lineOptions: {
+          styles: [{ color: 'blue', weight: 5 }]
+        },
+        show: false,
+        addWaypoints: false,
+        draggableWaypoints: false,
+        routeWhileDragging: false
+      }).addTo(map);
+    });
+
+    // Mobile sidebar toggle
+    const menuToggle = document.getElementById("menu-toggle");
+    const sidebar = document.getElementById("sidebar");
+
+    menuToggle.addEventListener("click", () => {
+      sidebar.style.display = sidebar.style.display === "block" ? "none" : "block";
+    });
+  </script>
 </body>
 </html>
