@@ -20,15 +20,24 @@ const classLocations = [
 const markers = [];
 let routeLayerId = null;
 
-map.on('load', () => {
-    classLocations.forEach(cls => {
-        const marker = new maplibregl.Marker({ color: '#9E1B34' })
-            .setLngLat(cls.coords)
-            .setPopup(new maplibregl.Popup().setHTML(`<strong>${cls.name}</strong><br>${cls.description}`))
-            .addTo(map);
-        markers.push(marker);
-    });
-});
+window.onload = () => {
+  const map = new maplibregl.Map({
+    container: 'map', // Ensure the container ID is correct
+    style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json', // Or use a different OSM or tile URL
+    center: [-75.1550, 39.9811],
+    zoom: 16,
+    pitch: 60,
+    bearing: -20
+  });
+
+  map.addControl(new maplibregl.NavigationControl());
+
+  // Example of adding markers, route, etc.
+  map.on('load', () => {
+    // Add markers or custom layers here
+  });
+};
+
 
 // Plan Route Button
 document.getElementById('route-btn').addEventListener('click', () => {

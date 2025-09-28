@@ -9,8 +9,8 @@
   <link href="https://unpkg.com/maplibre-gl@3.3.1/dist/maplibre-gl.css" rel="stylesheet" />
   <link type="text/css" href="style.css" rel="stylesheet" />
   <script src="https://unpkg.com/maplibre-gl@3.3.1/dist/maplibre-gl.js"></script>
-  <script src="script.js"></script>
-
+  <script src="script.js" defer></script> <!-- Ensure script is loaded after HTML -->
+  
   <!-- Auth0 SPA SDK -->
   <script src="https://cdn.auth0.com/js/auth0-spa-js/1.26/auth0-spa-js.production.js"></script>
 </head>
@@ -48,7 +48,8 @@
         <button id="add-building-btn" aria-label="Add custom building location">Add Building</button>
       </div>
     </div>
-    <div id="map"></div>
+    <!-- Map Container -->
+    <div id="map" aria-label="Map view of the campus" role="application"></div>
   </div>
 
   <!-- Error Message Popup -->
