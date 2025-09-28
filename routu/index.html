@@ -1,245 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>rouTU - Campus Route Planner</title>
 
   <!-- MapLibre GL JS -->
   <link href="https://unpkg.com/maplibre-gl@3.3.1/dist/maplibre-gl.css" rel="stylesheet" />
+  <link type="text/css" href="style.css" rel="stylesheet" />
   <script src="https://unpkg.com/maplibre-gl@3.3.1/dist/maplibre-gl.js"></script>
-
+  <script src="script.js" defer></script> <!-- Ensure script is loaded after HTML -->
+  
   <!-- Auth0 SPA SDK -->
   <script src="https://cdn.auth0.com/js/auth0-spa-js/1.26/auth0-spa-js.production.js"></script>
-
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f8fafc;
-      color: #334155;
-    }
-
-    #header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    #header h1 {
-      font-size: 2rem;
-      font-weight: 700;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    }
-
-    #auth-nav a {
-      color: white;
-      text-decoration: none;
-      padding: 0.5rem 1rem;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 25px;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
-    }
-
-    #auth-nav a:hover {
-      background: rgba(255, 255, 255, 0.2);
-      border-color: rgba(255, 255, 255, 0.6);
-    }
-
-    #menu-toggle {
-      display: none;
-      background: none;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      color: white;
-      font-size: 1.2rem;
-      padding: 0.5rem;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    #map-container {
-      display: flex;
-      height: calc(100vh - 80px);
-    }
-
-    #sidebar {
-      width: 400px;
-      background: white;
-      padding: 1.5rem;
-      overflow-y: auto;
-      box-shadow: 4px 0 6px rgba(0, 0, 0, 0.1);
-      z-index: 1000;
-    }
-
-    .sidebar-section {
-      margin-bottom: 2rem;
-      padding: 1.5rem;
-      background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-      border-radius: 12px;
-      border: 1px solid #e2e8f0;
-    }
-
-    .sidebar-section h3 {
-      color: #1e293b;
-      margin-bottom: 1rem;
-      font-size: 1.2rem;
-      font-weight: 600;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 500;
-      color: #475569;
-    }
-
-    select,
-    input[type="file"],
-    textarea {
-      width: 100%;
-      padding: 0.75rem;
-      border: 2px solid #e2e8f0;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      transition: border-color 0.3s ease;
-      background: white;
-    }
-
-    select:focus,
-    input[type="file"]:focus,
-    textarea:focus {
-      outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    button {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      margin-top: 1rem;
-      margin-right: 0.5rem;
-    }
-
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
-    }
-
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    #map {
-      flex: 1;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 1.2rem;
-    }
-
-    #error-popup {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #ef4444;
-      color: white;
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      z-index: 10000;
-      transition: all 0.3s ease;
-    }
-
-    #error-popup.hidden {
-      display: none;
-    }
-
-    #loadingIndicator {
-      color: #667eea;
-      font-weight: 500;
-      margin-left: 0.5rem;
-    }
-
-    .success-message {
-      color: #059669;
-      background: #dcfce7;
-      padding: 0.75rem;
-      border-radius: 8px;
-      border: 1px solid #bbf7d0;
-      margin-top: 1rem;
-    }
-
-    .error-message {
-      color: #dc2626;
-      background: #fef2f2;
-      padding: 0.75rem;
-      border-radius: 8px;
-      border: 1px solid #fecaca;
-      margin-top: 1rem;
-    }
-
-    @media (max-width: 768px) {
-      #menu-toggle {
-        display: block;
-      }
-
-      #auth-nav {
-        display: none;
-      }
-
-      #map-container {
-        flex-direction: column;
-      }
-
-      #sidebar {
-        width: 100%;
-        height: 50vh;
-      }
-
-      #map {
-        height: 50vh;
-      }
-    }
-
-    /* Loading animation */
-    @keyframes pulse {
-      0%,
-      100% {
-        opacity: 1;
-      }
-
-      50% {
-        opacity: 0.5;
-      }
-    }
-
-    .loading {
-      animation: pulse 2s infinite;
-    }
-  </style>
 </head>
-
 <body>
   <div id="header">
     <h1>rouTU</h1>
@@ -263,118 +37,24 @@
         </select>
         <button id="route-btn" aria-label="Plan route to selected class">Show Route</button>
       </div>
-
-      <div class="input-section">
-        <h2>Input Your Schedule</h2>
-        <form id="scheduleForm">
-          <div>
-            <label for="imageUpload">Upload Image:</label>
-            <input type="file" id="imageUpload" name="file" accept="image/*">
-          </div>
-          <div style="margin-top: 1rem;">
-            <label for="audioUpload">Upload Audio:</label>
-            <input type="file" id="audioUpload" name="file" accept="audio/*">
-
-          </div>
-          <div style="margin-top: 1rem;">
-            <label for="notes">Add Notes:</label>
-            <textarea id="notes" name="notes" rows="4" placeholder="Add any additional information"></textarea>
-          </div>
-          <button type="submit" id="save-schedule" aria-label="Save your schedule">Save Schedule</button>
-        </form>
+      <div class="sidebar-section">
+        <h3>Add a Building</h3>
+        <label for="building-name">Building Name:</label>
+        <input type="text" id="building-name" placeholder="Building name" aria-label="Building name" />
+        <label for="building-lat">Latitude:</label>
+        <input type="number" id="building-lat" placeholder="Latitude" aria-label="Latitude" />
+        <label for="building-lng">Longitude:</label>
+        <input type="number" id="building-lng" placeholder="Longitude" aria-label="Longitude" />
+        <button id="add-building-btn" aria-label="Add custom building location">Add Building</button>
       </div>
     </div>
-
-    <div id="map">
-      <div id="loadingIndicator" class="loading">Loading map...</div>
-      <div id="mapElement" style="width: 100%; height: 100%;"></div>
-    </div>
+    <!-- Map Container -->
+    <div id="map" aria-label="Map view of the campus" role="application"></div>
   </div>
 
-  <div id="error-popup" class="hidden">
-    <span id="error-message">Something went wrong. Please try again later.</span>
+  <!-- Error Message Popup -->
+  <div id="error-popup" class="hidden" aria-live="assertive" role="alert">
+    <p>Only enter locations on main campus. Go Owls!</p>
   </div>
-
-  <script>
-    // Mapbox / MapLibre setup
-    const map = new maplibregl.Map({
-      container: 'mapElement',
-      style: 'https://demotiles.maplibre.org/style.json',  // Example Map style URL
-      center: [0, 0], // Starting position [longitude, latitude]
-      zoom: 14,
-    });
-
-    const markers = [
-      { lng: -122.4231, lat: 37.8268, title: 'Engineering Hall (CS101)' },
-      { lng: -122.4294, lat: 37.8269, title: 'Science Center (MATH202)' },
-      { lng: -122.4237, lat: 37.8273, title: 'Humanities Bldg (HIST150)' },
-      { lng: -122.4280, lat: 37.8280, title: 'Life Sciences (BIO111)' }
-    ];
-
-    // Add markers to the map
-    markers.forEach(marker => {
-      new maplibregl.Marker()
-        .setLngLat([marker.lng, marker.lat])
-        .setPopup(new maplibregl.Popup().setHTML(`<h4>${marker.title}</h4>`))
-        .addTo(map);
-    });
-
-    // Form submission handler
-    document.getElementById('scheduleForm').addEventListener('submit', function (event) {
-      event.preventDefault();
-
-      const formData = new FormData(this);
-      const notes = formData.get('notes');
-      const image = formData.get('file') || 'No image uploaded';
-      const audio = formData.get('audioUpload') || 'No audio uploaded';
-
-      console.log('Schedule Data:', { notes, image, audio });
-
-      // For now, just display a success message
-      document.querySelector('.success-message')?.remove();
-      const successMessage = document.createElement('div');
-      successMessage.classList.add('success-message');
-      successMessage.innerText = 'Schedule successfully saved!';
-      document.getElementById('sidebar').appendChild(successMessage);
-    });
-
-    // Route button click handler
-    document.getElementById('route-btn').addEventListener('click', function () {
-      const selectedClass = document.getElementById('class-selector').value;
-      if (!selectedClass) {
-        showError('Please select a class to see the route.');
-        return;
-      }
-      showRoute(selectedClass);
-    });
-
-    // Function to show route (mockup)
-    function showRoute(classId) {
-      const routeData = {
-        0: { start: 'Current Location', end: 'Engineering Hall' },
-        1: { start: 'Current Location', end: 'Science Center' },
-        2: { start: 'Current Location', end: 'Humanities Bldg' },
-        3: { start: 'Current Location', end: 'Life Sciences' },
-      };
-
-      const routeInfo = routeData[classId];
-      alert(`Showing route from ${routeInfo.start} to ${routeInfo.end}`);
-    }
-
-    // Function to show error
-    function showError(message) {
-      const errorPopup = document.getElementById('error-popup');
-      const errorMessage = document.getElementById('error-message');
-      errorMessage.innerText = message;
-      errorPopup.classList.remove('hidden');
-      setTimeout(() => errorPopup.classList.add('hidden'), 3000);
-    }
-
-    // Optional: Hide loading indicator after the map loads
-    map.on('load', function () {
-      document.getElementById('loadingIndicator').style.display = 'none';
-    });
-  </script>
 </body>
-
 </html>
