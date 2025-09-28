@@ -18,33 +18,42 @@
   <div id="header">
     <h1>rouTU</h1>
     <nav id="auth-nav">
-      <a href="#" id="auth-btn">Sign In / Sign Up</a>
+      <a href="#" id="auth-btn" aria-label="Sign in or sign up to your account">Sign In / Sign Up</a>
     </nav>
-    <button id="menu-toggle">☰</button>
+    <button id="menu-toggle" aria-label="Toggle sidebar menu">☰</button>
   </div>
 
   <div id="map-container">
     <div id="sidebar">
       <div class="sidebar-section">
-        <h3>Plan Route</h3>
-        <select id="class-selector">
+        <h3>Today's Schedule</h3>
+        <label for="class-selector">Select a class:</label>
+        <select id="class-selector" aria-label="Select a class">
           <option value="">Select a class</option>
+          <option value="0">CS101 - Engineering Hall</option>
+          <option value="1">MATH202 - Science Center</option>
+          <option value="2">HIST150 - Humanities Bldg</option>
+          <option value="3">BIO111 - Life Sciences</option>
         </select>
-        <button id="route-btn">Show Route</button>
-        <button id="process-schedule-btn">Process Schedule</button>
+        <button id="route-btn" aria-label="Plan route to selected class">Show Route</button>
       </div>
       <div class="sidebar-section">
-        <h3>Add Building Manually</h3>
-        <input type="text" id="building-name" placeholder="Building name" />
-        <input type="number" id="building-lat" placeholder="Latitude" />
-        <input type="number" id="building-lng" placeholder="Longitude" />
-        <button id="add-building-btn">Add Building</button>
+        <h3>Add a Building</h3>
+        <label for="building-name">Building Name:</label>
+        <input type="text" id="building-name" placeholder="Building name" aria-label="Building name" />
+        <label for="building-lat">Latitude:</label>
+        <input type="number" id="building-lat" placeholder="Latitude" aria-label="Latitude" />
+        <label for="building-lng">Longitude:</label>
+        <input type="number" id="building-lng" placeholder="Longitude" aria-label="Longitude" />
+        <button id="add-building-btn" aria-label="Add custom building location">Add Building</button>
       </div>
     </div>
     <div id="map"></div>
   </div>
 
-  <!-- Error Popup -->
-  <div id="error-popup" class="hidden" role="alert">Only enter locations on main campus. Go Owls!</div>
+  <!-- Error Message Popup -->
+  <div id="error-popup" class="hidden" aria-live="assertive" role="alert">
+    <p>Only enter locations on main campus. Go Owls!</p>
+  </div>
 </body>
 </html>
