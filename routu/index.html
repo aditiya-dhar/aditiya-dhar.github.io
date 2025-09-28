@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>rouTU - Campus Route Planner</title>
 
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <!-- MapLibre GL JS -->
+  <link href="https://unpkg.com/maplibre-gl@3.3.1/dist/maplibre-gl.css" rel="stylesheet" />
+  <link type="text/css" href="style.css" rel="stylesheet" />
+  <script src="https://unpkg.com/maplibre-gl@3.3.1/dist/maplibre-gl.js"></script>
+  <script src="script.js"></script>
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="style.css" />
-
-  <!-- Auth0 -->
+  <!-- Auth0 SPA SDK -->
   <script src="https://cdn.auth0.com/js/auth0-spa-js/1.26/auth0-spa-js.production.js"></script>
 </head>
 <body>
@@ -27,29 +27,24 @@
     <div id="sidebar">
       <div class="sidebar-section">
         <h3>Plan Route</h3>
-        <textarea id="class-input" placeholder="Enter your classes and times (e.g. CS101 at 9am, MATH202 at 12pm)"></textarea>
-        <button id="ai-process-btn">Process Schedule</button>
         <select id="class-selector">
           <option value="">Select a class</option>
         </select>
-        <button id="route-btn">Plan Route</button>
+        <button id="route-btn">Show Route</button>
+        <button id="process-schedule-btn">Process Schedule</button>
       </div>
-
-      <div class="sidebar-section collapsible">
-        <h3 id="toggle-manual">Add Building Manually</h3>
-        <div class="collapsible-content" style="display: none;">
-          <input type="text" id="building-name" placeholder="Building name" />
-          <input type="number" id="building-lat" placeholder="Latitude" />
-          <input type="number" id="building-lng" placeholder="Longitude" />
-          <button id="add-building-btn">Add Building</button>
-        </div>
+      <div class="sidebar-section">
+        <h3>Add Building Manually</h3>
+        <input type="text" id="building-name" placeholder="Building name" />
+        <input type="number" id="building-lat" placeholder="Latitude" />
+        <input type="number" id="building-lng" placeholder="Longitude" />
+        <button id="add-building-btn">Add Building</button>
       </div>
     </div>
     <div id="map"></div>
   </div>
 
-  <div id="error-popup" class="hidden">Only enter locations on main campus. Go Owls!</div>
-
-  <script src="script.js"></script>
+  <!-- Error Popup -->
+  <div id="error-popup" class="hidden" role="alert">Only enter locations on main campus. Go Owls!</div>
 </body>
 </html>
