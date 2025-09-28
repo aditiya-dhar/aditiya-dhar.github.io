@@ -1,12 +1,38 @@
-// ... existing map and boundary setup
+// === Initialize Leaflet Map ===
+const map = L.map('map').setView([39.9811, -75.1550], 16); // Center on Temple University Main Campus
 
+// Add OpenStreetMap tiles
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+}).addTo(map);
+
+// Add the custom .osm file (we'll need to load the file as GeoJSON here)
+function loadOSMData() {
+  fetch('map.osm') // Assuming your `map.osm` file is in the same directory
+    .then(response => response.text())
+    .then(xml => {
+      const geojson = osm2geojson(new DOMParser().parseFromString(xml, 'application/xml'));
+      L.geoJSON(geojson).addTo(map); // Display the converted GeoJSON on the map
+    })
+    .catch(err => {
+      console.error('Error loading OSM data: ', err);
+      showErrorPopup('Error loading OSM data.');
+    });
+}
+
+// === Load OSM Data ===
+loadOSMData();
+
+// === Plan Route Functionality ===
 let plannedRoute = [];
+let routeLayerId = null;
 
+// Process AI-generated classes (from the user input)
 document.getElementById('ai-process-btn').addEventListener('click', async () => {
   const input = document.getElementById('class-input').value.trim();
   if (!input) return;
 
-  const apiKey = "YOUR_GOOGLE_API_KEY"; // Replace with secure value if server-side
+  const apiKey = "YOUR_GOOGLE_API_KEY"; // Replace with your secure API key
 
   try {
     const output = await callGoogleAI(input, apiKey);
@@ -28,9 +54,7 @@ document.getElementById('ai-process-btn').addEventListener('click', async () => 
       option.value = classLocations.length - 1;
       document.getElementById('class-selector').appendChild(option);
 
-      const marker = new maplibregl.Marker({ color: '#9E1B34' })
-        .setLngLat([lng, lat])
-        .setPopup(new maplibregl.Popup().setHTML(`<strong>${name}</strong><br>Generated`))
+      const marker = new L.Marker([lat, lng]).bindPopup(`<strong>${name}</strong><br>Generated`)
         .addTo(map);
       markers.push(marker);
     });
@@ -40,7 +64,7 @@ document.getElementById('ai-process-btn').addEventListener('click', async () => 
   }
 });
 
-// === Plan Route from all locations ===
+// Plan the route (generate route between the buildings)
 document.getElementById('route-btn').addEventListener('click', () => {
   if (plannedRoute.length < 2) {
     showErrorPopup("Need at least two locations to plan a route.");
@@ -48,35 +72,34 @@ document.getElementById('route-btn').addEventListener('click', () => {
   }
 
   if (routeLayerId) {
-    if (map.getLayer(routeLayerId)) map.removeLayer(routeLayerId);
-    if (map.getSource(routeLayerId)) map.removeSource(routeLayerId);
+    map.removeLayer(routeLayerId); // Remove previous route if it exists
   }
 
   routeLayerId = `route-${Date.now()}`;
   const routeCoords = plannedRoute.map(loc => loc.coords);
 
-  map.addSource(routeLayerId, {
-    type: 'geojson',
-    data: {
-      type: 'Feature',
-      geometry: {
-        type: 'LineString',
-        coordinates: routeCoords,
-      },
+  const routeGeoJson = {
+    type: 'Feature',
+    geometry: {
+      type: 'LineString',
+      coordinates: routeCoords,
     },
-  });
+  };
 
-  map.addLayer({
-    id: routeLayerId,
-    type: 'line',
-    source: routeLayerId,
-    layout: {
-      'line-cap': 'round',
-      'line-join': 'round',
+  // Display the route as a GeoJSON layer
+  L.geoJSON(routeGeoJson, {
+    style: {
+      color: '#9E1B34',
+      weight: 4,
+      opacity: 0.7,
     },
-    paint: {
-      'line-color': '#9E1B34',
-      'line-width': 0.25,
-    },
-  });
+  }).addTo(map);
 });
+
+// === Error Popup ===
+function showErrorPopup(message) {
+  const popup = document.getElementById('error-popup');
+  popup.textContent = message;
+  popup.classList.remove('hidden');
+  setTimeout(() => popup.classList.add('hidden'), 10000);
+}
