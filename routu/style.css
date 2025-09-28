@@ -5,7 +5,7 @@ body {
 }
 
 #header {
-    background-color: #1e3a8a;
+    background-color: #9E1B34;
     color: white;
     padding: 10px 20px;
     display: flex;
@@ -39,7 +39,7 @@ body {
 
 #auth-nav a:hover {
     background-color: white;
-    color: #1e3a8a;
+    color: #9E1B34;
 }
 
 #menu-toggle {
