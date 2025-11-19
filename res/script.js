@@ -8,12 +8,12 @@ const pages = {
   </body>
   <p>
     <ul>
-      <li>I helped make HOoT's website. Check it out: <a href="https://h0otu.github.io/">HOoT</a></li>
+      <li>I made HOoT's website: <a href="https://h0otu.github.io/">HOoT</a></li>
       <li>Hackathon frontend draft: <a href="routu/index.html">rouTU OwlHacks2025</a></li>
     </ul>
   </p>
   <br>
-  <h2><marquee>This page is under construction :)</marquee></h2>
+  <h2>This page is under construction :)</h2>
   <img class="background" src="https://upload.wikimedia.org/wikipedia/commons/9/9c/Lunch_atop_a_Skyscraper_-_Charles_Clyde_Ebbets.jpg" alt="construction" width="30%">
       `
 };
