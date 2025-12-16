@@ -1,11 +1,13 @@
 html {
     font-family: Arial, sans-serif;
     font-size: 1.3rem;
+    height: 100%;
+    background-image: linear-gradient(to top, #08ff6b 0%, #9e99ff 100%); /* #073 @ https://webgradients.com/ */
 }
 
 body {
     margin: 0.7rem;
-}
+    }
 
 .background {
     z-index: -1;
@@ -18,6 +20,9 @@ body {
 }
 
 #navbar {
+    position: fixed;
+    top: 0;
+    width: 90%;
     font-size: 1.5rem;
     background-color: honeydew;
     margin: 0.5rem;
@@ -34,21 +39,35 @@ body {
 
 a {
     text-decoration: none;
-    color: rgb(167, 98, 91);
+    color: rgb(12, 50, 147);
+}
+
+a:hover {
+    color: rgb(18, 77, 227);
+    text-decoration: underline;
+}
+
+#main-content{
+    padding-top: 3rem;
 }
 
 footer {
     position: fixed;
     bottom: 0;
+    left: 0;
     width: 100%;
-    background-color: honeydew;
+    background-color: #07d459;
     text-align: center;
     padding: 0.5rem;
-    margin-top: 0.4rem;
+    margin-top: 0.5rem;
 }
 
-@media (min-width: 30rem) {
+@media (max-width: 30rem) {
+    #navbar {
+        font-size: clamp(0.8rem, 5vw, 1.5rem);
+    }
+
     body {
-        font-size: 0.9rem;
+        font-size: 0.8rem;
     }
 }

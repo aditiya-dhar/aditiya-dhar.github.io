@@ -5,21 +5,24 @@ const pages = {
     home: `
     <p>
     hello world!
-    </br>
-    I'm Aditiya Dhar, a computer science student.
     </br></br>
     This page is under construction :)
     </p>
       `,
-    work: `
+    projects: `
     <p>
     Here's some of the stuff I've worked on:
         <ul>
-            <li>I made HOoT's website: <a href="https://h0otu.github.io/">HOoT</a></li>
-            <li>Hackathon frontend draft: <a href="routu/index.html">rouTU OwlHacks2025</a></li>
+            <li>I made HOoT's website: <a href="https://h0otu.github.io/" target="_blank">HOoT</a></li>
+            <li>Hackathon frontend draft: <a href="routu/index.html" target="_blank">rouTU OwlHacks2025</a></li>
         </ul>
     </p>
-    `
+    `,
+    research: `
+    <p>
+        I am currently doing astrophysics research. My current interests are radio astronomy 
+         (pulsar observations) and high-energy gamma ray astrophysics (unassociated sources).
+    </p>`
 };
 
 function renderPage(page) {
