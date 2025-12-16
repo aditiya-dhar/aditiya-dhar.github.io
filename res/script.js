@@ -6,7 +6,8 @@ const pages = {
     <p>
     hello world!
     </br></br>
-    This page is under construction :)
+    This page is under construction :)</br></br>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/9/9c/Lunch_atop_a_Skyscraper_-_Charles_Clyde_Ebbets.jpg" alt="construction" width="30%">
     </p>
       `,
     projects: `
@@ -20,8 +21,11 @@ const pages = {
     `,
     research: `
     <p>
-        I am currently doing astrophysics research. My current interests are radio astronomy 
-         (pulsar observations) and high-energy gamma ray astrophysics (unassociated sources).
+        I am currently doing astrophysics research. My current interests are:
+        <ul>
+        <li> radio astronomy (pulsar observations) </li>
+        <li> high-energy gamma ray astrophysics (unassociated sources). </li>
+        </ul>
     </p>`
 };
 

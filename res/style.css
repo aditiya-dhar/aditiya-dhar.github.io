@@ -9,16 +9,6 @@ body {
     margin: 0.7rem;
     }
 
-.background {
-    z-index: -1;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    opacity: 0.6;
-}
-
 #navbar {
     position: fixed;
     top: 0;
@@ -49,6 +39,10 @@ a:hover {
 
 #main-content{
     padding-top: 3rem;
+}
+
+.icon {
+    width: clamp(0.9rem, 4vw, 1.3rem);
 }
 
 footer {
