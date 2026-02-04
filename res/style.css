@@ -1,23 +1,24 @@
 html {
-    font-family: Arial, sans-serif;
+    font-family: "Noto Sans Sharada", sans-serif;
+    font-weight: 400;
+    font-style: normal;
     font-size: 1.3rem;
     height: 100%;
-    background-image: linear-gradient(to top, #08ff6b 0%, #9e99ff 100%); /* #073 @ https://webgradients.com/ */
+    color: #e2e2e2;
+    background-color: #333333;
 }
 
 body {
     margin: 0.7rem;
-    }
+}
 
 #navbar {
     position: fixed;
     top: 0;
-    width: 90%;
+    left: 0;
     font-size: 1.5rem;
-    background-color: honeydew;
-    margin: 0.5rem;
+    background-color: rgb(194, 186, 84);
     padding: 0.4rem;
-    box-shadow: 0.3rem 0.1rem 0.1rem 0.1rem rgba(0, 0, 0, 0.5);
 }
 
 #navbar .link {
@@ -26,18 +27,21 @@ body {
     margin: 0.2rem;
     font-weight: bold;
 }
+#navbar .link:hover {
+    color: rgb(238, 238, 238);
+    text-decoration: underline;
+}
 
 a {
     text-decoration: none;
-    color: rgb(12, 50, 147);
+    color: rgb(112, 138, 206);
 }
-
 a:hover {
     color: rgb(18, 77, 227);
     text-decoration: underline;
 }
 
-#main-content{
+#main-content {
     padding-top: 3rem;
 }
 
@@ -50,7 +54,7 @@ footer {
     bottom: 0;
     left: 0;
     width: 100%;
-    background-color: #07d459;
+    background-color: #255525;
     text-align: center;
     padding: 0.5rem;
     margin-top: 0.5rem;
